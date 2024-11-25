@@ -5,6 +5,7 @@ import { Card } from "./components/card";
 import Chart from "chart.js/auto";
 import { CiSearch } from "react-icons/ci";
 import { FaRedoAlt, FaSearch } from "react-icons/fa";
+import { toast } from "sonner";
 
 interface FullData {
   date: string;
@@ -227,6 +228,10 @@ export default function Dashboard(){
   
       return matchesCategory && matchesDate && matchesAccount && matchesState;
     });
+
+    if (filtered.length === 0) {
+      toast.warning("Nenhum dado encontrado.");
+    }
   
     setFullData(filtered || []);
     calcularResumo(filtered);

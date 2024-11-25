@@ -5,6 +5,7 @@ import Link from "next/link";
 import { redirect } from "next/navigation";
 import { useState } from "react";
 import { toast } from "sonner";
+import { FaEye, FaEyeSlash } from 'react-icons/fa';
 
 export default function Signup(){
   //Realizei um cadastro pelo localStorage com a validação para bater email e senha cadastrado.
@@ -13,9 +14,17 @@ export default function Signup(){
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+
+    if(password != confirmPassword){
+      toast.warning("As senhas não coincidem. Por favor, tente novamente.");
+      return
+    }
 
     const payload = { name, email, password };
     const jwt = createJWT(payload);
@@ -43,7 +52,7 @@ export default function Signup(){
               placeholder="Digite seu nome..."
               className="h-10 border border-gray-600 rounded-lg px-4 bg-gray-900 text-white placeholder-gray-200"
               value={name}
-              onChange={(e) => setName(e.target.value)}
+              onChange={(e) => setName(e.target.value.replace(/[^a-zA-Z]/g, ''))}
             />
             <input 
               type="email"
@@ -54,15 +63,43 @@ export default function Signup(){
               value={email}
               onChange={(e) => setEmail(e.target.value)}
             />
-            <input 
-              type="password"
-              required
-              name="password"
-              placeholder="**************"
-              className="h-10 border border-gray-600 rounded-lg px-4 bg-gray-900 text-white placeholder-gray-200"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-            />
+            <div className="relative">
+              <input 
+                type={showPassword ? 'text' : 'password'}
+                required
+                name="password"
+                placeholder="**************"
+                className="h-10 border border-gray-600 rounded-lg px-4 bg-gray-900 text-white placeholder-gray-200 w-full"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+              />
+              <button
+                type="button"
+                className="absolute right-4 top-1/2 transform -translate-y-1/2 text-white"
+                onClick={() => setShowPassword(!showPassword)} // Alterna o estado de visibilidade da senha
+              >
+                {showPassword ? <FaEyeSlash /> : <FaEye />} {/* Alterna o ícone */}
+              </button>
+            </div>
+
+            <div className="relative">
+              <input 
+                type={showConfirmPassword ? 'text' : 'password'}
+                required
+                name="confirmPassword"
+                placeholder="**************"
+                className="h-10 border border-gray-600 rounded-lg px-4 bg-gray-900 text-white placeholder-gray-200 w-full"
+                value={confirmPassword}
+                onChange={(e) => setConfirmPassword(e.target.value)}
+              />
+              <button
+                type="button"
+                className="absolute right-4 top-1/2 transform -translate-y-1/2 text-white"
+                onClick={() => setShowConfirmPassword(!showConfirmPassword)} // Alterna o estado de visibilidade da senha
+              >
+                {showConfirmPassword ? <FaEyeSlash /> : <FaEye />} {/* Alterna o ícone */}
+              </button>
+            </div>
 
             <button
               type="submit"
