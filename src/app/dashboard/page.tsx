@@ -29,6 +29,7 @@ export default function Dashboard(){
   const [chartsStackedBar, setChartsStackedBar] = useState<{ stackedBar: Chart | null }>({ stackedBar: null });
   const [chartsStackedLine, setChartsStackedLine] = useState<{ stackedBar: Chart | null }>({ stackedBar: null });
   const [fullData, setFullData] = useState<FullData[]>([]);
+  const [originalData, setOriginalData] = useState<FullData[]>([]);
   const [selectedCategory, setSelectedCategory] = useState<string>("");
   const [selectedDate, setSelectedDate] = useState<string>("");
   const [selectedAccount, setSelectedAccount] = useState<string>("");
@@ -43,6 +44,7 @@ export default function Dashboard(){
 
   useEffect(() => {
     setFullData(fullDataJson as FullData[]);
+    setOriginalData(fullDataJson as FullData[])
     calcularResumo(fullDataJson as FullData[]);
   }, [])
 
@@ -206,25 +208,28 @@ export default function Dashboard(){
   };
 
   const applyFilters = () => {
-    const filtered = fullData.filter((item) => {
+    const filtered = originalData.filter((item) => {
       const matchesCategory = selectedCategory
         ? item.industry.toLowerCase().includes(selectedCategory.toLowerCase())
         : true;
+  
       const matchesDate = selectedDate
-        ? new Date(item.date).toISOString().slice(0, 10) === selectedDate
+        ? new Date(item.date).toLocaleDateString('en-CA') === selectedDate
         : true;
+  
       const matchesAccount = selectedAccount
         ? item.account.includes(selectedAccount)
         : true;
+  
       const matchesState = selectedState
         ? item.state.toLowerCase().includes(selectedState.toLowerCase())
         : true;
   
       return matchesCategory && matchesDate && matchesAccount && matchesState;
     });
-
+  
     setFullData(filtered || []);
-    calcularResumo(filtered)
+    calcularResumo(filtered);
   };
 
   const resetFilters = () => {
